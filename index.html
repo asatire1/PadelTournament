@@ -624,3 +624,506 @@
             sf2: 'SF2',
             final: 'Final'
         };
+// ===== STATE MANAGEMENT =====
+        class TournamentState {
+            constructor() {
+                this.currentTab = 'fixtures';
+                this.settingsSubTab = 'players';
+                this.filterRound = 'all';
+                this.filterPlayer = 'all';
+                this.isInitialized = false;
+                this.loadFromFirebase();
+            }
+
+            getDefaultRatings() {
+                const defaultRatings = {};
+                for (let i = 1; i <= 24; i++) {
+                    defaultRatings[i] = parseFloat((3.75 - ((i - 1) * 0.75 / 23)).toFixed(2));
+                }
+                return defaultRatings;
+            }
+
+            initializeDefaults() {
+                this.playerNames = [...DEFAULT_PLAYER_NAMES];
+                this.skillRatings = this.getDefaultRatings();
+                this.matchScores = {};
+                this.fixtures = JSON.parse(JSON.stringify(DEFAULT_FIXTURES));
+                this.matchNames = {...DEFAULT_MATCH_NAMES};
+                this.knockoutNames = {...DEFAULT_KNOCKOUT_NAMES};
+                this.knockoutScores = {};
+                this.knockoutMaxScore = 16;
+                this.semiMaxScore = 16;
+                this.finalMaxScore = 16;
+                this.savedVersions = [];
+            }
+
+            loadFromFirebase() {
+                database.ref('tournament').on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        this.playerNames = data.playerNames || [...DEFAULT_PLAYER_NAMES];
+                        this.skillRatings = data.skillRatings || this.getDefaultRatings();
+                        this.matchScores = data.matchScores || {};
+                        this.fixtures = data.fixtures || JSON.parse(JSON.stringify(DEFAULT_FIXTURES));
+                        this.matchNames = data.matchNames || {...DEFAULT_MATCH_NAMES};
+                        this.knockoutNames = data.knockoutNames || {...DEFAULT_KNOCKOUT_NAMES};
+                        this.knockoutScores = data.knockoutScores || {};
+                        this.knockoutMaxScore = data.knockoutMaxScore || 16;
+                        this.semiMaxScore = data.semiMaxScore || 16;
+                        this.finalMaxScore = data.finalMaxScore || 16;
+                        this.savedVersions = data.savedVersions || [];
+                    } else {
+                        this.initializeDefaults();
+                        this.saveToFirebase();
+                    }
+                    
+                    if (!this.isInitialized) {
+                        this.isInitialized = true;
+                        render();
+                    } else {
+                        render();
+                    }
+                });
+            }
+
+            saveToFirebase() {
+                const data = {
+                    playerNames: this.playerNames,
+                    skillRatings: this.skillRatings,
+                    matchScores: this.matchScores,
+                    fixtures: this.fixtures,
+                    matchNames: this.matchNames,
+                    knockoutNames: this.knockoutNames,
+                    knockoutScores: this.knockoutScores,
+                    knockoutMaxScore: this.knockoutMaxScore,
+                    semiMaxScore: this.semiMaxScore,
+                    finalMaxScore: this.finalMaxScore,
+                    savedVersions: this.savedVersions
+                };
+                database.ref('tournament').set(data);
+            }
+
+            updatePlayerName(index, name) {
+                if (!checkPasscode()) return;
+                this.playerNames[index] = name;
+                this.saveToFirebase();
+            }
+
+            updateSkillRating(playerId, rating) {
+                if (!checkPasscode()) return;
+                this.skillRatings[playerId] = rating;
+                this.saveToFirebase();
+            }
+
+            updateMatchName(matchNum, name) {
+                if (!checkPasscode()) return;
+                this.matchNames[matchNum] = name;
+                this.saveToFirebase();
+            }
+
+            updateKnockoutName(matchId, name) {
+                if (!checkPasscode()) return;
+                this.knockoutNames[matchId] = name;
+                this.saveToFirebase();
+            }
+
+            resetMatchNames() {
+                if (!checkPasscode()) return;
+                this.matchNames = {...DEFAULT_MATCH_NAMES};
+                this.saveToFirebase();
+            }
+
+            resetKnockoutNames() {
+                if (!checkPasscode()) return;
+                this.knockoutNames = {...DEFAULT_KNOCKOUT_NAMES};
+                this.saveToFirebase();
+            }
+
+            updateMatchScore(round, match, team1Score, team2Score) {
+                if (!checkPasscode()) return;
+                if (!this.matchScores[round]) {
+                    this.matchScores[round] = {};
+                }
+                this.matchScores[round][match] = { team1Score, team2Score };
+                this.saveToFirebase();
+            }
+
+            clearMatchScore(round, match) {
+                if (!checkPasscode()) return;
+                if (this.matchScores[round] && this.matchScores[round][match]) {
+                    delete this.matchScores[round][match];
+                    this.saveToFirebase();
+                }
+            }
+
+            updateKnockoutScore(matchId, team1Score, team2Score) {
+                if (!checkPasscode()) return;
+                this.knockoutScores[matchId] = { team1Score, team2Score };
+                this.saveToFirebase();
+            }
+
+            clearKnockoutScore(matchId) {
+                if (!checkPasscode()) return;
+                if (this.knockoutScores[matchId]) {
+                    delete this.knockoutScores[matchId];
+                    this.saveToFirebase();
+                }
+            }
+
+            updateKnockoutMaxScore(value) {
+                if (!checkPasscode()) return;
+                this.knockoutMaxScore = value;
+                this.saveToFirebase();
+            }
+
+            updateSemiMaxScore(value) {
+                if (!checkPasscode()) return;
+                this.semiMaxScore = value;
+                this.saveToFirebase();
+            }
+
+            updateFinalMaxScore(value) {
+                if (!checkPasscode()) return;
+                this.finalMaxScore = value;
+                this.saveToFirebase();
+            }
+
+            updateFixture(round, matchIdx, team1p1, team1p2, team2p1, team2p2) {
+                if (!checkPasscode()) return;
+                this.fixtures[round][matchIdx] = {
+                    team1: [parseInt(team1p1), parseInt(team1p2)],
+                    team2: [parseInt(team2p1), parseInt(team2p2)]
+                };
+                this.saveToFirebase();
+            }
+
+            updateFixtureWithSwap(round, matchIdx, position, oldValue, newValue) {
+                if (!checkPasscode()) return;
+                const match = this.fixtures[round][matchIdx];
+                
+                const playersInRound = [];
+                this.fixtures[round].forEach((m, idx) => {
+                    playersInRound.push(...m.team1, ...m.team2);
+                });
+                
+                if (playersInRound.includes(newValue)) {
+                    this.fixtures[round].forEach((m, idx) => {
+                        ['team1', 'team2'].forEach(team => {
+                            [0, 1].forEach(pos => {
+                                if (m[team][pos] === newValue) {
+                                    this.fixtures[round][idx][team][pos] = oldValue;
+                                }
+                            });
+                        });
+                    });
+                }
+                
+                if (position === 't1p1') match.team1[0] = newValue;
+                else if (position === 't1p2') match.team1[1] = newValue;
+                else if (position === 't2p1') match.team2[0] = newValue;
+                else if (position === 't2p2') match.team2[1] = newValue;
+                
+                this.saveToFirebase();
+            }
+
+            resetFixtures() {
+                if (!checkPasscode()) return;
+                this.fixtures = JSON.parse(JSON.stringify(DEFAULT_FIXTURES));
+                this.saveToFirebase();
+            }
+
+            exportFixtures() {
+                return JSON.stringify(this.fixtures, null, 2);
+            }
+
+            importFixtures(fixturesJson) {
+                if (!checkPasscode()) return false;
+                try {
+                    const parsed = JSON.parse(fixturesJson);
+                    this.fixtures = parsed;
+                    this.saveToFirebase();
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            resetAllScores() {
+                if (!checkPasscode()) return;
+                this.createBackup('Auto-backup before reset');
+                this.matchScores = {};
+                this.saveToFirebase();
+            }
+
+            createBackup(name) {
+                if (!checkPasscode()) return null;
+                const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                const backup = {
+                    id: Date.now(),
+                    name: name || `Backup ${timestamp}`,
+                    timestamp: timestamp,
+                    playerNames: [...this.playerNames],
+                    skillRatings: {...this.skillRatings},
+                    matchScores: JSON.parse(JSON.stringify(this.matchScores)),
+                    fixtures: JSON.parse(JSON.stringify(this.fixtures)),
+                    matchNames: {...this.matchNames},
+                    knockoutNames: {...this.knockoutNames},
+                    knockoutScores: JSON.parse(JSON.stringify(this.knockoutScores)),
+                    knockoutMaxScore: this.knockoutMaxScore,
+                    semiMaxScore: this.semiMaxScore,
+                    finalMaxScore: this.finalMaxScore
+                };
+                
+                this.savedVersions.unshift(backup);
+                if (this.savedVersions.length > 10) {
+                    this.savedVersions = this.savedVersions.slice(0, 10);
+                }
+                this.saveToFirebase();
+                return backup;
+            }
+
+            loadVersion(versionId) {
+                if (!checkPasscode()) return;
+                const version = this.savedVersions.find(v => v.id === versionId);
+                if (version) {
+                    this.createBackup('Auto-backup before load');
+                    this.playerNames = [...version.playerNames];
+                    this.skillRatings = {...version.skillRatings};
+                    this.matchScores = JSON.parse(JSON.stringify(version.matchScores));
+                    if (version.fixtures) this.fixtures = JSON.parse(JSON.stringify(version.fixtures));
+                    if (version.matchNames) this.matchNames = {...version.matchNames};
+                    if (version.knockoutNames) this.knockoutNames = {...version.knockoutNames};
+                    if (version.knockoutScores) this.knockoutScores = JSON.parse(JSON.stringify(version.knockoutScores));
+                    if (version.knockoutMaxScore) this.knockoutMaxScore = version.knockoutMaxScore;
+                    if (version.semiMaxScore) this.semiMaxScore = version.semiMaxScore;
+                    if (version.finalMaxScore) this.finalMaxScore = version.finalMaxScore;
+                    this.saveToFirebase();
+                }
+            }
+
+            deleteVersion(versionId) {
+                if (!checkPasscode()) return;
+                this.savedVersions = this.savedVersions.filter(v => v.id !== versionId);
+                this.saveToFirebase();
+            }
+
+            exportData() {
+                return {
+                    exportDate: new Date().toISOString(),
+                    playerNames: this.playerNames,
+                    skillRatings: this.skillRatings,
+                    matchScores: this.matchScores,
+                    fixtures: this.fixtures,
+                    matchNames: this.matchNames,
+                    knockoutNames: this.knockoutNames,
+                    knockoutScores: this.knockoutScores,
+                    knockoutMaxScore: this.knockoutMaxScore,
+                    semiMaxScore: this.semiMaxScore,
+                    finalMaxScore: this.finalMaxScore,
+                    savedVersions: this.savedVersions
+                };
+            }
+
+            importData(data) {
+                if (!checkPasscode()) return;
+                if (data.playerNames) this.playerNames = data.playerNames;
+                if (data.skillRatings) this.skillRatings = data.skillRatings;
+                if (data.matchScores) this.matchScores = data.matchScores;
+                if (data.fixtures) this.fixtures = data.fixtures;
+                if (data.matchNames) this.matchNames = data.matchNames;
+                if (data.knockoutNames) this.knockoutNames = data.knockoutNames;
+                if (data.knockoutScores) this.knockoutScores = data.knockoutScores;
+                if (data.knockoutMaxScore) this.knockoutMaxScore = data.knockoutMaxScore;
+                if (data.semiMaxScore) this.semiMaxScore = data.semiMaxScore;
+                if (data.finalMaxScore) this.finalMaxScore = data.finalMaxScore;
+                if (data.savedVersions) this.savedVersions = data.savedVersions;
+                this.saveToFirebase();
+            }
+
+            resetPlayerNames() {
+                if (!checkPasscode()) return;
+                this.playerNames = [...DEFAULT_PLAYER_NAMES];
+                const defaultRatings = {};
+                for (let i = 1; i <= 24; i++) {
+                    defaultRatings[i] = parseFloat((3.75 - ((i - 1) * 0.75 / 23)).toFixed(2));
+                }
+                this.skillRatings = defaultRatings;
+                this.saveToFirebase();
+            }
+        }
+
+        const state = new TournamentState();
+
+        // ===== UTILITY FUNCTIONS =====
+        function getTier(playerId) {
+            if (playerId >= 1 && playerId <= 4) return 'elite';
+            if (playerId >= 5 && playerId <= 8) return 'advanced';
+            if (playerId >= 9 && playerId <= 12) return 'intermediate-plus';
+            if (playerId >= 13 && playerId <= 16) return 'intermediate';
+            if (playerId >= 17 && playerId <= 20) return 'beginner-plus';
+            return 'beginner';
+        }
+
+        function getTierName(playerId) {
+            const tier = getTier(playerId);
+            const names = {
+                'elite': 'Elite',
+                'advanced': 'Advanced',
+                'intermediate-plus': 'Intermediate+',
+                'intermediate': 'Intermediate',
+                'beginner-plus': 'Beginner+',
+                'beginner': 'Beginner'
+            };
+            return names[tier];
+        }
+
+        function isWithinGroup(match) {
+            const allPlayers = [...match.team1, ...match.team2];
+            const tier = getTier(allPlayers[0]);
+            return allPlayers.every(p => getTier(p) === tier);
+        }
+
+        function getMatchScore(round, matchIdx) {
+            return state.matchScores[round]?.[matchIdx] || { team1Score: null, team2Score: null };
+        }
+
+        function isMatchComplete(round, matchIdx) {
+            const score = getMatchScore(round, matchIdx);
+            return score.team1Score !== null && score.team2Score !== null;
+        }
+
+        function getWinner(round, matchIdx) {
+            const score = getMatchScore(round, matchIdx);
+            if (score.team1Score === null || score.team2Score === null) return null;
+            if (score.team1Score > score.team2Score) return 'team1';
+            if (score.team2Score > score.team1Score) return 'team2';
+            return 'draw';
+        }
+
+        function countCompletedMatches() {
+            let count = 0;
+            for (let round = 1; round <= 13; round++) {
+                for (let match = 0; match < 6; match++) {
+                    if (isMatchComplete(round, match)) count++;
+                }
+            }
+            return count;
+        }
+
+        // ===== COMPONENTS =====
+        function PlayerBadge(playerId, showRating = false) {
+            const tier = getTier(playerId);
+            const name = state.playerNames[playerId - 1];
+            const rating = state.skillRatings[playerId];
+            
+            return `
+                <div class="player-badge-enhanced text-white tier-${tier}">
+                    <span class="font-bold">#${playerId}</span>
+                    <span>${name}</span>
+                    ${showRating ? `<span class="opacity-90 text-xs">(${rating})</span>` : ''}
+                </div>
+            `;
+        }
+
+        function MatchCard(round, matchIdx, match) {
+            const within = isWithinGroup(match);
+            const score = getMatchScore(round, matchIdx);
+            const isComplete = isMatchComplete(round, matchIdx);
+            const winner = getWinner(round, matchIdx);
+            
+            const team1Rating = (state.skillRatings[match.team1[0]] + state.skillRatings[match.team1[1]]).toFixed(2);
+            const team2Rating = (state.skillRatings[match.team2[0]] + state.skillRatings[match.team2[1]]).toFixed(2);
+            
+            const matchName = state.matchNames[matchIdx + 1] || `Match ${matchIdx + 1}`;
+            
+            return `
+                <div class="match-card ${within ? 'match-within' : 'match-cross'} ${isComplete ? 'complete' : ''}">
+                    <div class="px-5 py-2.5 flex justify-between items-center" style="background: rgba(0, 0, 0, 0.02);">
+                        <div class="flex items-center gap-2.5">
+                            <div class="font-semibold text-lg text-gray-800" style="letter-spacing: -0.5px;">R${round}</div>
+                            <div class="w-1 h-1 rounded-full bg-gray-300"></div>
+                            <div class="text-xs text-gray-500 font-medium">${matchName}</div>
+                        </div>
+                        <div class="match-type-badge ${within ? 'bg-purple-50 text-purple-600' : 'bg-green-50 text-green-600'}">
+                            ${within ? 'Within' : 'Cross'}
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="space-y-2">
+                            <div class="flex justify-center gap-2">
+                                ${PlayerBadge(match.team1[0])}
+                                ${PlayerBadge(match.team1[1])}
+                            </div>
+                            <div class="flex items-center justify-center gap-2">
+                                <div class="px-2.5 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-semibold" style="letter-spacing: 0.3px;">
+                                    ⚡ ${team1Rating}
+                                </div>
+                                ${winner === 'team1' ? `<div class="flex items-center gap-1 text-green-600 font-semibold text-xs"><span style="font-size: 1rem;">🏆</span></div>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-center gap-3 py-1">
+                            <input type="number" min="0" max="16" value="${score.team1Score !== null ? score.team1Score : ''}" placeholder="—" class="score-input" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 1)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
+                            <span class="score-divider">:</span>
+                            <input type="number" min="0" max="16" value="${score.team2Score !== null ? score.team2Score : ''}" placeholder="—" class="score-input" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 2)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
+                            ${isComplete ? `<button onclick="clearScore(${round}, ${matchIdx})" class="clear-score-btn" title="Clear score">×</button>` : ''}
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-center gap-2">
+                                ${PlayerBadge(match.team2[0])}
+                                ${PlayerBadge(match.team2[1])}
+                            </div>
+                            <div class="flex items-center justify-center gap-2">
+                                <div class="px-2.5 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-semibold" style="letter-spacing: 0.3px;">
+                                    ⚡ ${team2Rating}
+                                </div>
+                                ${winner === 'team2' ? `<div class="flex items-center gap-1 text-green-600 font-semibold text-xs"><span style="font-size: 1rem;">🏆</span></div>` : ''}
+                            </div>
+                        </div>
+                        ${isComplete && winner === 'draw' ? `<div class="winner-banner py-2 text-sm" style="background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%); margin-top: 8px;">🤝 Match Drawn</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateStandings() {
+            const standings = [];
+            for (let playerId = 1; playerId <= 24; playerId++) {
+                let matches = 0, wins = 0, draws = 0, losses = 0;
+                let pointsFor = 0, pointsAgainst = 0;
+                let tournamentPoints = 0;
+                const partners = new Set();
+                for (let round = 1; round <= 13; round++) {
+                    state.fixtures[round].forEach((match, matchIdx) => {
+                        const allPlayers = [...match.team1, ...match.team2];
+                        if (!allPlayers.includes(playerId)) return;
+                        const score = getMatchScore(round, matchIdx);
+                        if (score.team1Score === null || score.team2Score === null) return;
+                        matches++;
+                        const isTeam1 = match.team1.includes(playerId);
+                        const playerScore = isTeam1 ? score.team1Score : score.team2Score;
+                        const opponentScore = isTeam1 ? score.team2Score : score.team1Score;
+                        pointsFor += playerScore;
+                        pointsAgainst += opponentScore;
+                        const partner = isTeam1 ? match.team1.find(p => p !== playerId) : match.team2.find(p => p !== playerId);
+                        partners.add(partner);
+                        if (playerScore > opponentScore) { wins++; tournamentPoints += 3; }
+                        else if (playerScore === opponentScore) { draws++; tournamentPoints += 1; }
+                        else { losses++; }
+                    });
+                }
+                standings.push({
+                    playerId, name: state.playerNames[playerId - 1], rating: state.skillRatings[playerId],
+                    matches, wins, draws, losses, pointsFor, pointsAgainst,
+                    pointsDiff: pointsFor - pointsAgainst, tournamentPoints,
+                    winRate: matches > 0 ? (wins / matches * 100).toFixed(1) : '0.0',
+                    uniquePartners: partners.size
+                });
+            }
+            standings.sort((a, b) => {
+                if (b.tournamentPoints !== a.tournamentPoints) return b.tournamentPoints - a.tournamentPoints;
+                if (b.pointsDiff !== a.pointsDiff) return b.pointsDiff - a.pointsDiff;
+                return b.pointsFor - a.pointsFor;
+            });
+            return standings;
+        }
+        
