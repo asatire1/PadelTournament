@@ -1,11 +1,11 @@
 {
   "players": [
-    { "id": 1, "name": "Abdul", "rating": 3.75 },
-    { "id": 2, "name": "Sohaib", "rating": 3.73 },
+    { "id": 1, "name": "Arfat", "rating": 3.75 },
+    { "id": 2, "name": "Bilal", "rating": 3.73 },
     { "id": 3, "name": "Azam", "rating": 3.70 },
-    { "id": 4, "name": "Suhail", "rating": 3.68 },
+    { "id": 4, "name": "Sohaib", "rating": 3.68 },
     { "id": 5, "name": "Asim Din", "rating": 3.65 },
-    { "id": 6, "name": "Arfat", "rating": 3.62 },
+    { "id": 6, "name": "Abdul", "rating": 3.62 },
     { "id": 7, "name": "Chris P", "rating": 3.59 },
     { "id": 8, "name": "Zafar", "rating": 3.57 },
     { "id": 9, "name": "Khal", "rating": 3.54 },
