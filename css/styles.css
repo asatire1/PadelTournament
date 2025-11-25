@@ -84,17 +84,16 @@ body {
 
 /* ===== COMPACT PLAYER BADGE (for horizontal match cards) ===== */
 .player-badge-compact {
-    min-width: 60px;
-    max-width: 95px;
-    flex: 1 1 auto;
-    padding: 5px 6px;
+    width: 100%;
+    max-width: 120px;
+    padding: 5px 8px;
     border-radius: 100px;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     color: white;
     white-space: nowrap;
@@ -105,31 +104,39 @@ body {
 .player-name-truncate {
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 45px;
+}
+
+/* ===== TEAM STACK (two players stacked vertically) ===== */
+.team-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 /* ===== SCORE BOX (Horizontal Layout) ===== */
 .score-box-horizontal {
-    min-width: 100px;
-    max-width: 140px;
-    flex: 0 1 auto;
+    min-width: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 3px;
     background: #f3f4f6;
-    padding: 6px 4px;
+    padding: 8px 6px;
     border-radius: 10px;
+    flex-shrink: 0;
 }
 
 /* ===== COMPACT SCORE INPUT ===== */
 .score-input-compact {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     text-align: center;
     border: none;
     background: transparent;
-    width: 26px;
+    width: 28px;
     color: #1F2937;
 }
 
@@ -159,7 +166,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     flex-wrap: nowrap;
     width: 100%;
 }
@@ -394,31 +401,23 @@ select {
     }
 
     .player-badge-compact {
-        min-width: 50px;
-        max-width: 70px;
-        font-size: 0.55rem;
-        padding: 4px 4px;
-        gap: 1px;
-    }
-
-    .player-name-truncate {
-        max-width: 30px;
+        max-width: 100px;
+        font-size: 0.65rem;
+        padding: 4px 6px;
     }
 
     .score-box-horizontal {
-        min-width: 80px;
-        max-width: 100px;
-        padding: 4px 2px;
-        gap: 1px;
+        min-width: 90px;
+        padding: 6px 4px;
     }
 
     .score-box-horizontal .text-xs {
-        font-size: 0.5rem;
+        font-size: 0.6rem;
     }
 
     .score-input-compact {
-        font-size: 0.875rem;
-        width: 22px;
+        font-size: 1rem;
+        width: 24px;
     }
 
     .clear-score-btn-small {
@@ -426,28 +425,31 @@ select {
         height: 20px;
         font-size: 0.75rem;
     }
+
+    .team-stack {
+        gap: 3px;
+    }
+
+    .match-row {
+        gap: 4px;
+    }
 }
 
 /* Extra small screens */
 @media (max-width: 380px) {
     .player-badge-compact {
-        min-width: 45px;
-        max-width: 60px;
-        font-size: 0.5rem;
-        padding: 3px 3px;
-    }
-
-    .player-name-truncate {
-        max-width: 25px;
+        max-width: 80px;
+        font-size: 0.6rem;
+        padding: 3px 5px;
     }
 
     .score-box-horizontal {
-        min-width: 70px;
-        max-width: 90px;
+        min-width: 80px;
+        padding: 5px 3px;
     }
 
     .score-input-compact {
-        font-size: 0.75rem;
-        width: 18px;
+        font-size: 0.9rem;
+        width: 20px;
     }
 }
