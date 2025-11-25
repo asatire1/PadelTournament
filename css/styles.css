@@ -84,57 +84,59 @@ body {
 
 /* ===== COMPACT PLAYER BADGE (for horizontal match cards) ===== */
 .player-badge-compact {
-    width: 95px;
-    padding: 6px 10px;
+    min-width: 60px;
+    max-width: 95px;
+    flex: 1 1 auto;
+    padding: 5px 6px;
     border-radius: 100px;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 2px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     color: white;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-shrink: 0;
 }
 
 .player-name-truncate {
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 55px;
+    max-width: 45px;
 }
 
 /* ===== SCORE BOX (Horizontal Layout) ===== */
 .score-box-horizontal {
-    width: 140px;
+    min-width: 100px;
+    max-width: 140px;
+    flex: 0 1 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 2px;
     background: #f3f4f6;
-    padding: 8px 8px;
-    border-radius: 12px;
-    flex-shrink: 0;
+    padding: 6px 4px;
+    border-radius: 10px;
 }
 
 /* ===== COMPACT SCORE INPUT ===== */
 .score-input-compact {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
     text-align: center;
     border: none;
     background: transparent;
-    width: 32px;
+    width: 26px;
     color: #1F2937;
 }
 
 .score-input-compact:focus {
     outline: none;
     background: white;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
 .score-input-compact::placeholder {
@@ -150,6 +152,16 @@ body {
 }
 .score-input-compact {
     -moz-appearance: textfield;
+}
+
+/* ===== MATCH ROW FLEX CONTAINER ===== */
+.match-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    width: 100%;
 }
 
 /* ===== ORIGINAL SCORE INPUT (for knockout etc) ===== */
@@ -382,22 +394,60 @@ select {
     }
 
     .player-badge-compact {
-        width: 80px;
-        font-size: 0.65rem;
-        padding: 5px 8px;
+        min-width: 50px;
+        max-width: 70px;
+        font-size: 0.55rem;
+        padding: 4px 4px;
+        gap: 1px;
     }
 
     .player-name-truncate {
-        max-width: 45px;
+        max-width: 30px;
     }
 
     .score-box-horizontal {
-        width: 120px;
-        padding: 6px;
+        min-width: 80px;
+        max-width: 100px;
+        padding: 4px 2px;
+        gap: 1px;
+    }
+
+    .score-box-horizontal .text-xs {
+        font-size: 0.5rem;
     }
 
     .score-input-compact {
-        font-size: 1rem;
-        width: 28px;
+        font-size: 0.875rem;
+        width: 22px;
+    }
+
+    .clear-score-btn-small {
+        width: 20px;
+        height: 20px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 380px) {
+    .player-badge-compact {
+        min-width: 45px;
+        max-width: 60px;
+        font-size: 0.5rem;
+        padding: 3px 3px;
+    }
+
+    .player-name-truncate {
+        max-width: 25px;
+    }
+
+    .score-box-horizontal {
+        min-width: 70px;
+        max-width: 90px;
+    }
+
+    .score-input-compact {
+        font-size: 0.75rem;
+        width: 18px;
     }
 }
