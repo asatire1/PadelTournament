@@ -15,7 +15,20 @@ function PlayerBadge(playerId, showRating = false) {
     `;
 }
 
-// ===== MATCH CARD =====
+// ===== COMPACT PLAYER BADGE (for horizontal layout) =====
+function CompactPlayerBadge(playerId) {
+    const tier = getTier(playerId);
+    const name = state.playerNames[playerId - 1];
+    
+    return `
+        <div class="player-badge-compact text-white tier-${tier}">
+            <span class="font-bold">#${playerId}</span>
+            <span class="player-name-truncate">${name}</span>
+        </div>
+    `;
+}
+
+// ===== MATCH CARD (Horizontal Layout) =====
 function MatchCard(round, matchIdx, match) {
     const within = isWithinGroup(match);
     const score = state.getMatchScore(round, matchIdx);
@@ -29,48 +42,36 @@ function MatchCard(round, matchIdx, match) {
     
     return `
         <div class="match-card ${within ? 'match-within' : 'match-cross'} ${isComplete ? 'complete' : ''}">
-            <div class="px-5 py-2.5 flex justify-between items-center" style="background: rgba(0, 0, 0, 0.02);">
-                <div class="flex items-center gap-2.5">
-                    <div class="font-semibold text-lg text-gray-800" style="letter-spacing: -0.5px;">R${round}</div>
+            <div class="px-4 py-2 flex justify-between items-center bg-gray-50">
+                <div class="flex items-center gap-2">
+                    <div class="font-semibold text-gray-800">R${round}</div>
                     <div class="w-1 h-1 rounded-full bg-gray-300"></div>
-                    <div class="text-xs text-gray-500 font-medium">${matchName}</div>
+                    <div class="text-xs text-gray-500">${matchName}</div>
                 </div>
-                <div class="match-type-badge ${within ? 'bg-purple-50 text-purple-600' : 'bg-green-50 text-green-600'}">
-                    ${within ? 'Within' : 'Cross'}
+                <div class="flex items-center gap-2">
+                    ${winner === 'team1' ? `<span class="text-green-600">🏆</span>` : ''}
+                    ${winner === 'draw' ? `<span class="text-gray-500">🤝</span>` : ''}
+                    ${winner === 'team2' ? `<span class="text-green-600">🏆</span>` : ''}
+                    <div class="text-xs font-semibold px-2 py-1 rounded-full ${within ? 'bg-purple-50 text-purple-600' : 'bg-green-50 text-green-600'}">
+                        ${within ? 'Within' : 'Cross'}
+                    </div>
                 </div>
             </div>
-            <div class="p-4 space-y-3">
-                <div class="space-y-2">
-                    <div class="flex justify-center gap-2">
-                        ${PlayerBadge(match.team1[0])}
-                        ${PlayerBadge(match.team1[1])}
+            <div class="px-3 py-3">
+                <div class="flex items-center gap-1.5 justify-center flex-wrap">
+                    ${CompactPlayerBadge(match.team1[0])}
+                    ${CompactPlayerBadge(match.team1[1])}
+                    <div class="score-box-horizontal">
+                        <span class="text-xs text-gray-400">${team1Rating}</span>
+                        <input type="number" min="0" max="16" value="${score.team1Score !== null ? score.team1Score : ''}" placeholder="—" class="score-input-compact" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 1)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
+                        <span class="text-gray-400">:</span>
+                        <input type="number" min="0" max="16" value="${score.team2Score !== null ? score.team2Score : ''}" placeholder="—" class="score-input-compact" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 2)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
+                        <span class="text-xs text-gray-400">${team2Rating}</span>
                     </div>
-                    <div class="flex items-center justify-center gap-2">
-                        <div class="px-2.5 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-semibold" style="letter-spacing: 0.3px;">
-                            ⚡ ${team1Rating}
-                        </div>
-                        ${winner === 'team1' ? `<div class="flex items-center gap-1 text-green-600 font-semibold text-xs"><span style="font-size: 1rem;">🏆</span></div>` : ''}
-                    </div>
+                    ${CompactPlayerBadge(match.team2[0])}
+                    ${CompactPlayerBadge(match.team2[1])}
+                    ${isComplete ? `<button onclick="clearScore(${round}, ${matchIdx})" class="clear-score-btn-small" title="Clear score">×</button>` : ''}
                 </div>
-                <div class="flex items-center justify-center gap-3 py-1">
-                    <input type="number" min="0" max="16" value="${score.team1Score !== null ? score.team1Score : ''}" placeholder="—" class="score-input" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 1)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
-                    <span class="score-divider">:</span>
-                    <input type="number" min="0" max="16" value="${score.team2Score !== null ? score.team2Score : ''}" placeholder="—" class="score-input" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 2)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
-                    ${isComplete ? `<button onclick="clearScore(${round}, ${matchIdx})" class="clear-score-btn" title="Clear score">×</button>` : ''}
-                </div>
-                <div class="space-y-2">
-                    <div class="flex justify-center gap-2">
-                        ${PlayerBadge(match.team2[0])}
-                        ${PlayerBadge(match.team2[1])}
-                    </div>
-                    <div class="flex items-center justify-center gap-2">
-                        <div class="px-2.5 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-semibold" style="letter-spacing: 0.3px;">
-                            ⚡ ${team2Rating}
-                        </div>
-                        ${winner === 'team2' ? `<div class="flex items-center gap-1 text-green-600 font-semibold text-xs"><span style="font-size: 1rem;">🏆</span></div>` : ''}
-                    </div>
-                </div>
-                ${isComplete && winner === 'draw' ? `<div class="winner-banner py-2 text-sm" style="background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%); margin-top: 8px;">🤝 Match Drawn</div>` : ''}
             </div>
         </div>
     `;
@@ -157,7 +158,7 @@ function TournamentFixturesTab() {
                 </div>
             </div>
             ${matches.length > 0 ? `<div class="bg-blue-50 border border-blue-100 rounded-2xl p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">${matches.length}</div><span class="font-medium text-gray-700">${matches.length === 1 ? 'match' : 'matches'} found</span></div></div>` : ''}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 ${matches.map(m => MatchCard(m.round, m.idx, m.match)).join('')}
             </div>
             ${matches.length === 0 ? `<div class="text-center py-20"><div class="text-7xl mb-5 opacity-20">🔍</div><div class="text-xl font-semibold text-gray-400 mb-2" style="letter-spacing: -0.3px;">No matches found</div><div class="text-sm text-gray-400">Try adjusting your filters</div></div>` : ''}
