@@ -59,8 +59,10 @@ function MatchCard(round, matchIdx, match) {
             </div>
             <div class="px-3 py-3">
                 <div class="match-row">
-                    ${CompactPlayerBadge(match.team1[0])}
-                    ${CompactPlayerBadge(match.team1[1])}
+                    <div class="team-stack">
+                        ${CompactPlayerBadge(match.team1[0])}
+                        ${CompactPlayerBadge(match.team1[1])}
+                    </div>
                     <div class="score-box-horizontal">
                         <span class="text-xs text-gray-400">${team1Rating}</span>
                         <input type="number" min="0" max="16" value="${score.team1Score !== null ? score.team1Score : ''}" placeholder="—" class="score-input-compact" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 1)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
@@ -68,8 +70,10 @@ function MatchCard(round, matchIdx, match) {
                         <input type="number" min="0" max="16" value="${score.team2Score !== null ? score.team2Score : ''}" placeholder="—" class="score-input-compact" onchange="handleScoreChange(${round}, ${matchIdx}, this.value, 2)" ${!isUnlocked ? 'onclick="checkPasscode(); this.blur(); return false;"' : ''} />
                         <span class="text-xs text-gray-400">${team2Rating}</span>
                     </div>
-                    ${CompactPlayerBadge(match.team2[0])}
-                    ${CompactPlayerBadge(match.team2[1])}
+                    <div class="team-stack">
+                        ${CompactPlayerBadge(match.team2[0])}
+                        ${CompactPlayerBadge(match.team2[1])}
+                    </div>
                     ${isComplete ? `<button onclick="clearScore(${round}, ${matchIdx})" class="clear-score-btn-small" title="Clear score">×</button>` : ''}
                 </div>
             </div>
