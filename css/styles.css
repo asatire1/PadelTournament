@@ -1,5 +1,4 @@
-/* ===== GLOBAL STYLES ===== */
-
+/* ===== BASE STYLES ===== */
 * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -10,77 +9,47 @@ body {
 }
 
 /* ===== TIER COLORS ===== */
+.tier-elite { background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); }
+.tier-advanced { background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%); }
+.tier-intermediate-plus { background: linear-gradient(135deg, #CA8A04 0%, #A16207 100%); }
+.tier-intermediate { background: linear-gradient(135deg, #16A34A 0%, #15803D 100%); }
+.tier-beginner-plus { background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); }
+.tier-beginner { background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%); }
 
-.tier-elite { 
-    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%); 
-}
-
-.tier-advanced { 
-    background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%); 
-}
-
-.tier-intermediate-plus { 
-    background: linear-gradient(135deg, #CA8A04 0%, #A16207 100%); 
-}
-
-.tier-intermediate { 
-    background: linear-gradient(135deg, #16A34A 0%, #15803D 100%); 
-}
-
-.tier-beginner-plus { 
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); 
-}
-
-.tier-beginner { 
-    background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%); 
-}
-
-/* ===== MATCH TYPE INDICATORS ===== */
-
+/* ===== MATCH CARD BORDERS ===== */
 .match-within { 
     border-left: 3px solid #7C3AED;
     background: linear-gradient(to right, rgba(124, 58, 237, 0.02), transparent);
 }
-
 .match-cross { 
     border-left: 3px solid #16A34A;
     background: linear-gradient(to right, rgba(22, 163, 74, 0.02), transparent);
 }
 
 /* ===== TAB STYLES ===== */
-
 .tab-active { 
     background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
     color: white;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
-
 .tab-inactive { 
     background: transparent;
     color: #6B7280;
 }
 
-/* ===== INPUT NUMBER SPINNER ===== */
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    opacity: 1;
-    height: 40px;
-}
-
-/* ===== MATCH CARDS ===== */
-
+/* ===== MATCH CARD ===== */
 .match-card {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: white;
-    border-radius: 20px;
+    border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .match-card:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     border-color: rgba(59, 130, 246, 0.2);
 }
 
@@ -89,8 +58,101 @@ input[type="number"]::-webkit-outer-spin-button {
     border-color: rgba(22, 163, 74, 0.2);
 }
 
-/* ===== SCORE INPUT ===== */
+/* ===== PLAYER BADGE (Original - for results tables etc) ===== */
+.player-badge-enhanced {
+    padding: 8px 14px;
+    border-radius: 100px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
+.player-badge-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== COMPACT PLAYER BADGE (for horizontal match cards) ===== */
+.player-badge-compact {
+    width: 95px;
+    padding: 6px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+}
+
+.player-name-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55px;
+}
+
+/* ===== SCORE BOX (Horizontal Layout) ===== */
+.score-box-horizontal {
+    width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: #f3f4f6;
+    padding: 8px 8px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+/* ===== COMPACT SCORE INPUT ===== */
+.score-input-compact {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: center;
+    border: none;
+    background: transparent;
+    width: 32px;
+    color: #1F2937;
+}
+
+.score-input-compact:focus {
+    outline: none;
+    background: white;
+    border-radius: 8px;
+}
+
+.score-input-compact::placeholder {
+    color: #D1D5DB;
+    font-weight: 400;
+}
+
+/* Hide number input spinners */
+.score-input-compact::-webkit-inner-spin-button,
+.score-input-compact::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.score-input-compact {
+    -moz-appearance: textfield;
+}
+
+/* ===== ORIGINAL SCORE INPUT (for knockout etc) ===== */
 .score-input {
     font-size: 1.75rem;
     font-weight: 600;
@@ -116,78 +178,19 @@ input[type="number"]::-webkit-outer-spin-button {
     font-weight: 400;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 40px;
+}
+
 .score-divider {
     font-size: 2rem;
     font-weight: 300;
     color: #D1D5DB;
 }
 
-/* ===== PLAYER BADGES ===== */
-
-.player-badge-enhanced {
-    padding: 8px 14px;
-    border-radius: 100px;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    min-width: 140px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.player-badge-enhanced:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* ===== MATCH TYPE BADGE ===== */
-
-.match-type-badge {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 100px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    backdrop-filter: blur(10px);
-}
-
-/* ===== WINNER BANNER ===== */
-
-.winner-banner {
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-    color: white;
-    padding: 12px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.875rem;
-    border-radius: 14px;
-    margin-top: 12px;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 0.3px;
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===== CLEAR SCORE BUTTON ===== */
-
+/* ===== CLEAR SCORE BUTTONS ===== */
 .clear-score-btn {
     background: rgba(239, 68, 68, 0.1);
     color: #DC2626;
@@ -214,8 +217,66 @@ input[type="number"]::-webkit-outer-spin-button {
     transform: scale(0.95) rotate(90deg);
 }
 
-/* ===== FILTER SECTION ===== */
+.clear-score-btn-small {
+    background: rgba(239, 68, 68, 0.1);
+    color: #DC2626;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
 
+.clear-score-btn-small:hover {
+    background: #FEE2E2;
+    transform: scale(1.1);
+}
+
+/* ===== MATCH TYPE BADGE ===== */
+.match-type-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    backdrop-filter: blur(10px);
+}
+
+/* ===== WINNER BANNER ===== */
+.winner-banner {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 14px;
+    margin-top: 12px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.3px;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== FILTER SECTION ===== */
 .filter-section {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px) saturate(180%);
@@ -223,7 +284,6 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* ===== SELECT DROPDOWN ===== */
-
 select {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -234,7 +294,6 @@ select {
 }
 
 /* ===== ROUND BUTTONS ===== */
-
 .round-btn {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -245,7 +304,6 @@ select {
 }
 
 /* ===== FIXTURE INPUT ===== */
-
 .fixture-input {
     width: 50px;
     text-align: center;
@@ -262,7 +320,6 @@ select {
 }
 
 /* ===== SETTINGS SUBTABS ===== */
-
 .settings-subtab {
     padding: 12px 24px;
     border-radius: 12px;
@@ -287,8 +344,7 @@ select {
     background: #E5E7EB;
 }
 
-/* ===== CUSTOM SCROLLBAR ===== */
-
+/* ===== SCROLLBAR ===== */
 .overflow-x-auto::-webkit-scrollbar {
     height: 6px;
 }
@@ -307,86 +363,7 @@ select {
     background: rgba(0, 0, 0, 0.3);
 }
 
-/* ===== LOCK BUTTON ===== */
-
-.lock-btn {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    background: white;
-    border: 2px solid #E5E7EB;
-    border-radius: 50%;
-    width: 56px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.lock-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.lock-btn.locked {
-    border-color: #EF4444;
-    background: #FEE2E2;
-}
-
-.lock-btn.unlocked {
-    border-color: #10B981;
-    background: #D1FAE5;
-}
-
-/* ===== PASSCODE MODAL ===== */
-
-.passcode-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    backdrop-filter: blur(8px);
-}
-
-.passcode-content {
-    background: white;
-    border-radius: 24px;
-    padding: 32px;
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.passcode-input {
-    width: 100%;
-    padding: 16px;
-    font-size: 1.5rem;
-    text-align: center;
-    border: 2px solid #E5E7EB;
-    border-radius: 12px;
-    margin: 20px 0;
-    letter-spacing: 8px;
-}
-
-.passcode-input:focus {
-    outline: none;
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-
+/* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 640px) {
     .score-input {
         width: 60px;
@@ -395,7 +372,7 @@ select {
     }
     
     .match-card {
-        border-radius: 16px;
+        border-radius: 12px;
     }
     
     .player-badge-enhanced {
@@ -404,10 +381,23 @@ select {
         padding: 6px 12px;
     }
 
-    .lock-btn {
-        width: 48px;
-        height: 48px;
-        top: 12px;
-        right: 12px;
+    .player-badge-compact {
+        width: 80px;
+        font-size: 0.65rem;
+        padding: 5px 8px;
+    }
+
+    .player-name-truncate {
+        max-width: 45px;
+    }
+
+    .score-box-horizontal {
+        width: 120px;
+        padding: 6px;
+    }
+
+    .score-input-compact {
+        font-size: 1rem;
+        width: 28px;
     }
 }
