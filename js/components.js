@@ -58,7 +58,7 @@ function MatchCard(round, matchIdx, match) {
                 </div>
             </div>
             <div class="px-3 py-3">
-                <div class="flex items-center gap-1.5 justify-center flex-wrap">
+                <div class="match-row">
                     ${CompactPlayerBadge(match.team1[0])}
                     ${CompactPlayerBadge(match.team1[1])}
                     <div class="score-box-horizontal">
